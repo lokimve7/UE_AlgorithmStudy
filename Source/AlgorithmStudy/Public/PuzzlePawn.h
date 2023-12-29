@@ -33,4 +33,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UPuzzleWidget* puzzleWidget;
+
+	void InputRMouse();
+	void InputRMouseUp();
+
+	
 };
