@@ -3,6 +3,7 @@
 
 #include "PuzzleWidget.h"
 #include <Components/Border.h>
+#include <Components/CanvasPanelSlot.h>
 
 void UPuzzleWidget::NativeConstruct()
 {
@@ -15,6 +16,15 @@ void UPuzzleWidget::NativeConstruct()
 		UWidget* widget = GetWidgetFromName(*widgetName);
 		UBorder* card = Cast<UBorder>(widget);
 		cardWidgets.Add(card);
+
+		// 만약에 i 가 0 이라면(첫번째 카드라면)
+		if (i == 0)
+		{
+			// 카드의 위치값을 저장
+			UCanvasPanelSlot* slot = Cast<UCanvasPanelSlot>(card->Slot);
+			offsetX = slot->GetPosition().X;
+			offsetY = slot->GetPosition().Y;
+		}
 	}	
 
 	// 카드 초기화
@@ -50,8 +60,8 @@ void UPuzzleWidget::InitCard()
 void UPuzzleWidget::SelectCard(FVector2D mousePos)
 {
 	// (x / 카드크기) + (y / 카드크기) * 카드가로갯수 = 선택된 카드 Index
-	int32 hIndex = (int32)(mousePos.X / cardSize);
-	int32 vIndex = (int32)(mousePos.Y / cardSize);
+	int32 hIndex = (int32)((mousePos.X - offsetX) / cardSize);
+	int32 vIndex = (int32)((mousePos.Y - offsetY) / cardSize);
 	int32 selectCardIdx = hIndex + vIndex * hCount;
 
 	UE_LOG(LogTemp, Warning, TEXT("select card = %d"), selectCardIdx);

@@ -34,4 +34,8 @@ public:
 	int32 hCount = 3;
 	// 카드가로세로갯수
 	int32 vCount = 3;
+
+	// 첫번째 카드의 위치(보정을 위해)
+	float offsetX;
+	float offsetY;
 };
