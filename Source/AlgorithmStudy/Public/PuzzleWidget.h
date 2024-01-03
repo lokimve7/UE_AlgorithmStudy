@@ -20,6 +20,7 @@ public:
 	void InitCard();
 	void SelectCard(FVector2D mousePos);
 	void FindNearCard(int32 idx);
+	void SameValueCard(int32 idx);
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -38,4 +39,10 @@ public:
 	// 첫번째 카드의 위치(보정을 위해)
 	float offsetX;
 	float offsetY;
+
+	// 선택한 카드의 값
+	int32 selectCardValue;
+
+	// 같은 값을 가지고 있는 카드의 idx
+	TArray<int32> sameCardIdx;
 };

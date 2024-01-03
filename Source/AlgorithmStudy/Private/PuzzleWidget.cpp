@@ -36,6 +36,9 @@ void UPuzzleWidget::InitCard()
 	// 카드의 값을 초기화
 	cardValues.Empty();
 
+	// sameCardIdx 초기화
+	sameCardIdx.Empty();
+
 	// 랜덤으로 카드의 색상을 바꾸자 (파란색, 노란색)
 	for (int32 i = 0; i < cardWidgets.Num(); i++)
 	{
@@ -60,11 +63,26 @@ void UPuzzleWidget::InitCard()
 void UPuzzleWidget::SelectCard(FVector2D mousePos)
 {
 	// (x / 카드크기) + (y / 카드크기) * 카드가로갯수 = 선택된 카드 Index
-	int32 hIndex = (int32)((mousePos.X - offsetX) / cardSize);
-	int32 vIndex = (int32)((mousePos.Y - offsetY) / cardSize);
+	int32 hIndex = (int32)((mousePos.X - offsetX) / cardSize); // 가로 기준으로 몇번째
+	int32 vIndex = (int32)((mousePos.Y - offsetY) / cardSize); // 세로 기준으로 몇번째
 	int32 selectCardIdx = hIndex + vIndex * hCount;
+		
+	// 가로 번째 hCount 보다 크거나 같으면 함수를 나가자.
+	// mousePos.X - offsetX 0 보다 작으면 함수를 나가자
+	// 세로 번째 vCount 보다 크거나 같으면 함수를 나가자.
+	// mousePos.Y - offsetY 0 보다 작으면 함수를 나가자
+	if (hIndex >= hCount ||
+		mousePos.X - offsetX < 0 ||
+		vIndex >= vCount ||
+		mousePos.Y - offsetY < 0)  return;
 
 	UE_LOG(LogTemp, Warning, TEXT("select card = %d"), selectCardIdx);
+
+	// 선택한 카드의 값 저장
+	selectCardValue = cardValues[selectCardIdx];
+
+	// sameCardIdx 에 selectCardIdx 넣자
+	sameCardIdx.Add(selectCardIdx);
 
 	// 선택한 카드는 빨간색
 	cardWidgets[selectCardIdx]->SetBrushColor(FLinearColor::Red);
@@ -82,28 +100,48 @@ void UPuzzleWidget::FindNearCard(int32 idx)
 	if (idx / hCount > 0)
 	{
 		n = idx - hCount;
-		UE_LOG(LogTemp, Warning, TEXT("up = %d"), n);
-		cardWidgets[n]->SetBrushColor(FLinearColor::Red);
+		//UE_LOG(LogTemp, Warning, TEXT("up = %d"), n);
+		// n 번째 카드의 값이 선택한 카드의 값과 같니?
+		SameValueCard(n);
 	}
 	// 하
 	if (idx / hCount < vCount - 1)
 	{
 		n = idx + hCount;
 		UE_LOG(LogTemp, Warning, TEXT("down = %d"), n);
-		cardWidgets[n]->SetBrushColor(FLinearColor::Red);
+		SameValueCard(n);
 	}
 	// 좌
 	if (idx % hCount > 0)
 	{
 		n = idx - 1;
 		UE_LOG(LogTemp, Warning, TEXT("left = %d"), n);
-		cardWidgets[n]->SetBrushColor(FLinearColor::Red);
+		SameValueCard(n);
 	}
 	// 우
 	if (idx % hCount < hCount - 1)
 	{
 		n = idx + 1;
 		UE_LOG(LogTemp, Warning, TEXT("right = %d"), n);
-		cardWidgets[n]->SetBrushColor(FLinearColor::Red);
+		SameValueCard(n);
+	}
+}
+
+void UPuzzleWidget::SameValueCard(int32 idx)
+{
+	// 내가 선택한 카드와 값이 같니?
+	if (selectCardValue == cardValues[idx])
+	{
+		// idx 가 이미 sameCardIdx 에 존재하니?
+		if (sameCardIdx.Contains(idx) == true) return;
+
+		// 색을 빨간색으로 바꾸자
+		cardWidgets[idx]->SetBrushColor(FLinearColor::Red);
+
+		// 같은 값을 가지고 있는 카드다!
+		sameCardIdx.Add(idx);
+
+		// idx 번째 카드 기준으로 상, 하, 좌, 우 검색
+		FindNearCard(idx);
 	}
 }
