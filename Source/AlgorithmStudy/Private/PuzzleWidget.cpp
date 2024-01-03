@@ -74,7 +74,7 @@ void UPuzzleWidget::SelectCard(FVector2D mousePos)
 	if (hIndex >= hCount ||
 		mousePos.X - offsetX < 0 ||
 		vIndex >= vCount ||
-		mousePos.Y - offsetY < 0)  return;
+		mousePos.Y - offsetY < 0)	return;
 
 	UE_LOG(LogTemp, Warning, TEXT("select card = %d"), selectCardIdx);
 
