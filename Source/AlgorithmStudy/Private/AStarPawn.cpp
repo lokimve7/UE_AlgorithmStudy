@@ -105,6 +105,8 @@ void AAStarPawn::FindPath()
 	// 기준이 되는 Cube 설정
 	currCube = openArray[0];
 
+	openArray.RemoveAt(0);
+
 	// 오른쪽
 	AddOpen(FVector::RightVector);
 	// 위 (앞)
@@ -115,7 +117,7 @@ void AAStarPawn::FindPath()
 	AddOpen(FVector::BackwardVector);
 
 	// 기준이 되는 Cube 를 openArray 에서 빼고, closeArray 에 넣자
-	openArray.RemoveAt(0);
+	
 	closeArray.Add(currCube);
 	// closeArray outline 을 빨간색으로
 	currCube->SetColor(FLinearColor::Red);
@@ -172,8 +174,8 @@ void AAStarPawn::AddOpen(FVector dir)
 			// openArray 값을 넣자 (나보다 Cost 큰 Cube 앞에)
 			int32 i = 0;
 			for (i = 0; i < openArray.Num(); i++)
-			{
-				if (openArray[i]->tCostValue > cube->tCostValue)
+			{				
+				if (openArray[i]->tCostValue >= cube->tCostValue)
 				{
 					break;
 				}
