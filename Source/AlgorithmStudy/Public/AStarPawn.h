@@ -27,7 +27,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
-	void InputLMouseDown();
+	void InputLMouseDown();	
 
 	void FindPath();
 	void AddOpen(FVector dir);
@@ -53,4 +53,11 @@ public:
 	// 검색이 다 끝난 Cube
 	UPROPERTY(VisibleAnywhere)
 	TArray<class ACubeBlock*> closeArray;
+
+	// 내가 움직여야 하는 길
+	UPROPERTY(VisibleAnywhere)
+	TArray<FVector> path;
+
+
+	float currTime;
 };

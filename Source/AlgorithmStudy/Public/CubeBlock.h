@@ -29,6 +29,8 @@ public:
 	// OutLine 색 바꾸는 함수
 	void SetColor(FLinearColor color);
 
+	void SetInit();
+
 	//OutLine Widget
 	UPROPERTY()
 	class UBorder* outLine;
@@ -44,4 +46,7 @@ public:
 	UPROPERTY()
 	class UTextBlock* tCost;
 	float tCostValue;
+
+	UPROPERTY()
+	class ACubeBlock* parentCube;
 };

@@ -26,6 +26,29 @@ void AAStarPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (path.Num() > 0)
+	{
+		currTime += DeltaTime;
+		if (currTime > 0.5f)
+		{
+			currTime = 0;
+
+			SetActorLocation(path[0]);
+			path.RemoveAt(0);
+
+			if (path.Num() == 0)
+			{
+				// 초기화
+				for(int32 i = 0; i < openArray.Num(); i++)
+					openArray[i]->SetInit();
+				for(int32 i = 0; i < closeArray.Num(); i++)
+					closeArray[i]->SetInit();
+
+				openArray.Empty();
+				closeArray.Empty();
+			}
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -96,6 +119,29 @@ void AAStarPawn::FindPath()
 	closeArray.Add(currCube);
 	// closeArray outline 을 빨간색으로
 	currCube->SetColor(FLinearColor::Red);
+
+	// 목적지까지 잘 찾아갔다면?
+	if (openArray[0] == goalCube || openArray.Num() == 0)
+	{
+		// 길을 찾은 것임 (노란색으로 OutLine 변경)
+
+		// 부모 CubeBlock 없을 때까지 반복
+
+		ACubeBlock* tempCube = goalCube;
+
+		while (tempCube->parentCube != nullptr)
+		{
+			// 가야하는 길 추가
+			path.Insert(tempCube->GetActorLocation(), 0);
+
+			tempCube->SetColor(FLinearColor::Yellow);
+			tempCube = tempCube->parentCube;
+		}
+	}
+	else
+	{
+		FindPath();
+	}
 }
 
 void AAStarPawn::AddOpen(FVector dir)
@@ -105,6 +151,7 @@ void AAStarPawn::AddOpen(FVector dir)
 	FVector start, end;
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(currCube);
+	params.AddIgnoredActor(this);
 
 	start = currCube->GetActorLocation();
 	end = start + dir * 100;
@@ -114,22 +161,26 @@ void AAStarPawn::AddOpen(FVector dir)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s : %s"), *dir.ToString(), *hit.GetActor()->GetActorLabel());
 
-		// 해당 Cube 의 Cost 구하자
+		
 		ACubeBlock* cube = Cast<ACubeBlock>(hit.GetActor());
-		cube->SetCost(currCube, goalCube);
-
-		// openArray 값을 넣자 (나보다 Cost 큰 Cube 앞에)
-		int32 i = 0;
-		for (i = 0; i < openArray.Num(); i++)
+		// openArray, closeArray 해당 Cube 가 없으면 
+		if (openArray.Contains(cube) == false && closeArray.Contains(cube) == false)
 		{
-			if (openArray[i]->tCostValue > cube->tCostValue)
+			// 해당 Cube 의 Cost 구하자
+			cube->SetCost(currCube, goalCube);
+
+			// openArray 값을 넣자 (나보다 Cost 큰 Cube 앞에)
+			int32 i = 0;
+			for (i = 0; i < openArray.Num(); i++)
 			{
-				break;
+				if (openArray[i]->tCostValue > cube->tCostValue)
+				{
+					break;
+				}
 			}
+			openArray.Insert(cube, i);
 		}
-		openArray.Insert(cube, i);
-	}
-	
+	}	
 	
 }
 

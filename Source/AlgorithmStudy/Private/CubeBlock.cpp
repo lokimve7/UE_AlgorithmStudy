@@ -63,10 +63,23 @@ void ACubeBlock::SetCost(class ACubeBlock* s, class ACubeBlock* g)
 
 	// OutLine Color 파란색으로 하자
 	SetColor(FLinearColor::Blue);
+
+	// 누구를 기준으로 Cost 계산을 했냐? (부모)
+	parentCube = s;
 }
 
 void ACubeBlock::SetColor(FLinearColor color)
 {
 	outLine->SetBrushColor(color);
+}
+
+void ACubeBlock::SetInit()
+{
+	SetColor(FLinearColor::Black);
+	parentCube = nullptr;
+	gCost->SetText(FText::AsNumber(0));
+	sCost->SetText(FText::AsNumber(0));
+	tCost->SetText(FText::AsNumber(0));
+	sCostValue = tCostValue = 0;
 }
 
