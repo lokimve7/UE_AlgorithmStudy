@@ -23,4 +23,25 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Cost 구하는 함수
+	void SetCost(class ACubeBlock* s, class ACubeBlock* g);
+
+	// OutLine 색 바꾸는 함수
+	void SetColor(FLinearColor color);
+
+	//OutLine Widget
+	UPROPERTY()
+	class UBorder* outLine;
+	//sCost Widget
+	UPROPERTY()
+	class UTextBlock* sCost;
+	//sCost Value
+	float sCostValue;
+	//gCost Widget
+	UPROPERTY()
+	class UTextBlock* gCost;
+	//tCost Widget
+	UPROPERTY()
+	class UTextBlock* tCost;
+	float tCostValue;
 };

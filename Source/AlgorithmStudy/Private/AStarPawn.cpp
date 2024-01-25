@@ -90,6 +90,12 @@ void AAStarPawn::FindPath()
 	AddOpen(FVector::LeftVector);
 	// 아래 (뒤)
 	AddOpen(FVector::BackwardVector);
+
+	// 기준이 되는 Cube 를 openArray 에서 빼고, closeArray 에 넣자
+	openArray.RemoveAt(0);
+	closeArray.Add(currCube);
+	// closeArray outline 을 빨간색으로
+	currCube->SetColor(FLinearColor::Red);
 }
 
 void AAStarPawn::AddOpen(FVector dir)
@@ -107,9 +113,23 @@ void AAStarPawn::AddOpen(FVector dir)
 	if (result == true)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s : %s"), *dir.ToString(), *hit.GetActor()->GetActorLabel());
+
+		// 해당 Cube 의 Cost 구하자
+		ACubeBlock* cube = Cast<ACubeBlock>(hit.GetActor());
+		cube->SetCost(currCube, goalCube);
+
+		// openArray 값을 넣자 (나보다 Cost 큰 Cube 앞에)
+		int32 i = 0;
+		for (i = 0; i < openArray.Num(); i++)
+		{
+			if (openArray[i]->tCostValue > cube->tCostValue)
+			{
+				break;
+			}
+		}
+		openArray.Insert(cube, i);
 	}
 	
-	// 해당 Cube 의 Cost 구하자
-	// openArray 값을 넣자 (나보다 Cost 큰 Cube 앞에)
+	
 }
 
